@@ -1,13 +1,14 @@
 import styled from "styled-components";
 
-export default function Footer() {
+export default function Footer({ movieName, moviePoster, showtime }) {
   return (
     <ContainerFooter>
       <div className="movie-poster">
-        <img src="" alt="" />
+        <img src={moviePoster} alt={`Poster do filme ${movieName}`} />
       </div>
       <div className="movie-text">
-        <p>Nome Filme</p>
+        <p>{movieName}</p>
+        {showtime ? <p>{showtime}</p> : null}
       </div>
     </ContainerFooter>
   );

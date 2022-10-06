@@ -1,8 +1,29 @@
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
+
 import styled from "styled-components";
 import Footer from "./Footer";
 
 export default function ShowtimePage() {
-  const seats = Array.from({ length: 50 }, (_, i) => i + 1);
+  // const seats = Array.from({ length: 50 }, (_, i) => i + 1);
+  const { idShowtime } = useParams();
+  const URL = `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idShowtime}/seats`;
+
+  const [showtime, setShowtime] = useState(undefined);
+
+  useEffect(() => {
+    const request = axios.get(URL);
+
+    request.then((response) => {
+      setShowtime(response.data);
+    });
+
+    request.catch((error) => {
+      console.log(error.response.data);
+    });
+  }, []);
+
   const seatsLabel = [
     {
       text: "Selecionado",
@@ -21,14 +42,20 @@ export default function ShowtimePage() {
     },
   ];
 
-  const setBackColor = function (color) {};
+  if (!showtime) {
+    return <div>Carregando</div>;
+  }
+
+  // const showtimeText = function (showtime) {
+  //   return;
+  // };
 
   return (
     <ContainerShowtime>
       <h2>Selecione o(s) assento(s)</h2>
       <SeatsBox>
-        {seats.map((seat) => (
-          <Seat key={seat}>{seat}</Seat>
+        {showtime.seats.map((seat) => (
+          <Seat key={seat.id}>{seat.name}</Seat>
         ))}
       </SeatsBox>
       <SeatsLabelBox>
@@ -49,17 +76,21 @@ export default function ShowtimePage() {
 
       <Form>
         <span>Nome do comprador:</span>
-        <input type={"text"} value="Digite seu nome..."></input>
+        <input type={"text"} placeholder="Digite seu nome..."></input>
         <span>CPF do comprador:</span>
-        <input type={"text"} value="Digite seu CPF..."></input>
+        <input type={"text"} placeholder="Digite seu CPF..."></input>
         <input
           className="btn"
           type={"submit"}
-          value="Reservar assento(s)"
+          placeholder="Reservar assento(s)"
         ></input>
       </Form>
 
-      <Footer />
+      <Footer
+        movieName={showtime.movie.title}
+        moviePoster={showtime.movie.posterURL}
+        showtime={`${showtime.day.weekday} - ${showtime.name}`}
+      />
     </ContainerShowtime>
   );
 }

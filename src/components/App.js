@@ -1,3 +1,4 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GlobalStyle from "./GlobalStyle";
 import Header from "./Header";
 import HomePage from "./HomePage";
@@ -10,10 +11,14 @@ export default function App() {
     <>
       <GlobalStyle />
       <Header />
-      {/* <HomePage /> */}
-      {/* <MoviePage /> */}
-      {/* <ShowtimePage /> */}
-      {/* <SuccessPage /> */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/filme/:idMovie" element={<MoviePage />} />
+          <Route path="/sessao/:idShowtime" element={<ShowtimePage />} />
+          <Route path="/sucesso" element={<SuccessPage />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

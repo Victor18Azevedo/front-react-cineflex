@@ -1,64 +1,44 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
+  const URL = "https://mock-api.driven.com.br/api/v5/cineflex/movies";
+
+  const [moviesList, setMoviesList] = useState([]);
+
+  useEffect(() => {
+    const request = axios.get(URL);
+
+    request.then((response) => {
+      setMoviesList(response.data);
+      // console.log(response.data);
+    });
+
+    request.catch((error) => {
+      console.log(error.response.data);
+    });
+  }, []);
+
+  if (!moviesList) {
+    return;
+  }
+
   return (
     <ContainerHome>
       <h2>Selecione o filme</h2>
       <ContainerMovies>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
-        <div>
-          <img
-            src="https://www.themoviedb.org/t/p/w600_and_h900_bestv2/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg"
-            alt="Poster Zack Snyder Justice League"
-          />
-        </div>
+        {moviesList.map((movie) => (
+          <div key={movie.id}>
+            <Link to={`/filme/${movie.id}`}>
+              <img
+                src={movie.posterURL}
+                alt={`Poster do filme ${movie.title}`}
+              />
+            </Link>
+          </div>
+        ))}
       </ContainerMovies>
     </ContainerHome>
   );

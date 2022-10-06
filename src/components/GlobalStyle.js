@@ -52,6 +52,14 @@ const GlobalStyle = createGlobalStyle`
         font-family: 'Roboto', sans-serif;
         font-weight: 400;       
     }
+    a{
+        color: currentColor;
+        text-decoration: none;
+    }
+    a:visited {
+        color: currentColor;
+        text-decoration: none;
+    }
 
 
 

@@ -1,39 +1,52 @@
-import Footer from "./Footer";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 
+import Footer from "./Footer";
 import styled from "styled-components";
 
 export default function MoviePage() {
+  const { idMovie } = useParams();
+  const URL = `https://mock-api.driven.com.br/api/v5/cineflex/movies/${idMovie}/showtimes`;
+
+  const [movie, setMovie] = useState(undefined);
+
+  useEffect(() => {
+    const request = axios.get(URL);
+
+    request.then((response) => {
+      setMovie(response.data);
+    });
+
+    request.catch((error) => {
+      console.log(error.response.data);
+    });
+  }, []);
+
+  if (!movie) {
+    return <div>Carregando</div>;
+  }
+
   return (
     <ContainerMovie>
       <h2>Selecione o Horário</h2>
-      <BoxShowtime>
-        <p>Quinta-feira - 24/06/2021</p>
-        <div className="showtime-box">
-          <div className="showtime">
-            <span>15:00</span>
+      {movie.days.map((day) => (
+        <BoxShowtime key={day.id}>
+          <p>
+            {day.weekday} - {day.date}
+          </p>
+          <div className="showtime-box">
+            {day.showtimes.map((showtime) => (
+              <Link key={showtime.id} to={`/sessao/${showtime.id}`}>
+                <div className="showtime">
+                  <span>{showtime.name}</span>
+                </div>
+              </Link>
+            ))}
           </div>
-          <div className="showtime">19:00</div>
-        </div>
-      </BoxShowtime>
-      <BoxShowtime>
-        <p>Quinta-feira - 24/06/2021</p>
-        <div className="showtime-box">
-          <div className="showtime">
-            <span>15:00</span>
-          </div>
-          <div className="showtime">19:00</div>
-        </div>
-      </BoxShowtime>
-      <BoxShowtime>
-        <p>Quinta-feira - 24/06/2021</p>
-        <div className="showtime-box">
-          <div className="showtime">
-            <span>15:00</span>
-          </div>
-          <div className="showtime">19:00</div>
-        </div>
-      </BoxShowtime>
-      <Footer />
+        </BoxShowtime>
+      ))}
+      <Footer movieName={movie.title} moviePoster={movie.posterURL} />
     </ContainerMovie>
   );
 }
@@ -42,6 +55,7 @@ const ContainerMovie = styled.section`
   width: 100vw;
   padding: 0 24px;
   margin-top: 67px;
+  margin-bottom: 130px;
   h2 {
     font-size: 24px;
     line-height: 100px;
