@@ -1,6 +1,19 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-export default function SuccessPage() {
+export default function SuccessPage({
+  booking,
+  showtime,
+  setBooking,
+  setShowtime,
+}) {
+  const navigate = useNavigate();
+
+  const backToHomPage = function () {
+    setBooking({ seats: [], ids: [], name: "", cpf: "" });
+    setShowtime(undefined);
+    navigate("/");
+  };
   return (
     <ContainerSuccess>
       <TitleSuccess>
@@ -12,20 +25,25 @@ export default function SuccessPage() {
       </TitleSuccess>
       <InfoBox>
         <h3>Filme e sessão</h3>
-        <p>Enola Holmes </p>
-        <p>24/06/2021 15:00</p>
+        <p>{showtime.movie.title}</p>
+        <p>
+          {showtime.day.date} {showtime.name}
+        </p>
       </InfoBox>
       <InfoBox>
         <h3>Ingressos</h3>
-        <p>Assento 15</p>
-        <p>Assento 16</p>
+        {booking.seats.map((seat) => (
+          <p key={seat}>Assento {seat}</p>
+        ))}
       </InfoBox>
       <InfoBox>
         <h3>Comprador</h3>
-        <p>Nome: João da Silva </p>
-        <p>CPF: 123.456.789-10</p>
+        <p>Nome: {booking.name}</p>
+        <p>CPF: {booking.cpf}</p>
       </InfoBox>
-      <div className="btn">Voltar para Home</div>
+      <button onClick={backToHomPage} className="btn">
+        Voltar para Home
+      </button>
     </ContainerSuccess>
   );
 }
@@ -35,6 +53,7 @@ const ContainerSuccess = styled.section`
   padding: 0 30px;
   margin-top: 67px;
   .btn {
+    display: block;
     width: 225px;
     height: 42px;
     margin: 0 auto;
@@ -77,5 +96,6 @@ const InfoBox = styled.div`
   p {
     font-size: 22px;
     line-height: 28px;
+    text-transform: capitalize;
   }
 `;

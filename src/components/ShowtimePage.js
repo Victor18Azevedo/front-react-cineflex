@@ -1,51 +1,67 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import styled from "styled-components";
 import Footer from "./Footer";
 
-export default function ShowtimePage() {
+export default function ShowtimePage({
+  booking,
+  setBooking,
+  showtime,
+  setShowtime,
+}) {
   // const seats = Array.from({ length: 50 }, (_, i) => i + 1);
   const { idShowtime } = useParams();
+  const navigate = useNavigate();
   const URL = `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idShowtime}/seats`;
-
-  const [showtime, setShowtime] = useState(undefined);
-  const [seatsSelected, setSeatsSelected] = useState([]);
-  const [form, setForm] = useState({ name: "", cpf: "" });
+  const URL_BOOK = `https://mock-api.driven.com.br/api/v5/cineflex/seats/book-many`;
 
   useEffect(() => {
-    const request = axios.get(URL);
-
-    request.then((response) => {
+    const requestSeats = axios.get(URL);
+    requestSeats.then((response) => {
       setShowtime(response.data);
     });
-
-    request.catch((error) => {
+    requestSeats.catch((error) => {
       console.log(error.response.data);
     });
   }, []);
 
   const handleForm = function (event) {
-    event.preventDefault();
     const { name, value } = event.target;
-    if (value) setForm({ ...form, [name]: value });
+
+    if (value) setBooking({ ...booking, [name]: value });
   };
 
-  // console.log(form);
+  // console.log(booking);
   // console.log(showtime);
-  console.log(seatsSelected);
+  // console.log(booking.ids);
+
+  const sendBooking = function (event) {
+    event.preventDefault();
+
+    const body = { ids: booking.ids, name: booking.name, cpf: booking.cpf };
+    const requestBooking = axios.post(URL_BOOK, body);
+    requestBooking.then((response) => {
+      console.log(body);
+      console.log(response.data);
+      navigate("/sucesso");
+    });
+    requestBooking.catch((error) => {
+      console.log(error.response.data);
+    });
+  };
 
   const selectSeat = function (seat) {
     if (seat.isAvailable) {
-      if (!seatsSelected.includes(seat.id)) {
-        setSeatsSelected([...seatsSelected, seat.id]);
+      if (!booking.ids.includes(seat.id)) {
+        const newBooking = { ...booking, ids: [...booking.ids, seat.id] };
+        setBooking({ ...newBooking, seats: [...booking.seats, seat.name] });
       } else {
-        setSeatsSelected(
-          seatsSelected.filter((item) => {
-            return item !== seat.id;
-          })
-        );
+        const seats = booking.ids.filter((id) => {
+          return id !== seat.id;
+        });
+        setBooking({ ...booking, ids: [...seats] });
       }
     } else {
       alert("Esse assento não está disponível");
@@ -53,7 +69,7 @@ export default function ShowtimePage() {
   };
 
   const setBackColor = function (seat) {
-    if (seatsSelected.includes(seat.id)) {
+    if (booking.ids.includes(seat.id)) {
       return "#1AAE9E";
     } else {
       return seat.isAvailable ? "#C3CFD9" : "#FBE192";
@@ -61,7 +77,7 @@ export default function ShowtimePage() {
   };
 
   const setBorderColor = function (seat) {
-    if (seatsSelected.includes(seat.id)) {
+    if (booking.ids.includes(seat.id)) {
       return "#0E7D71";
     } else {
       return seat.isAvailable ? "#7B8B99" : "#F7C52B";
@@ -121,13 +137,13 @@ export default function ShowtimePage() {
         ))}
       </SeatsLabelBox>
 
-      <Form onSubmit={handleForm}>
+      <Form onSubmit={sendBooking}>
         <label htmlFor="name">Nome do comprador:</label>
         <input
           type={"text"}
           id="name"
           name="name"
-          value={form.name}
+          value={booking.name}
           onChange={handleForm}
           placeholder="Digite seu nome..."
           required
@@ -137,7 +153,7 @@ export default function ShowtimePage() {
           type={"number"}
           id="cpf"
           name="cpf"
-          value={form.cpf}
+          value={booking.cpf}
           onChange={handleForm}
           placeholder="Digite seu CPF..."
           required

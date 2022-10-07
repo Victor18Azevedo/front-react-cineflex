@@ -5,8 +5,17 @@ import HomePage from "./HomePage";
 import MoviePage from "./MoviePage";
 import ShowtimePage from "./ShowtimePage";
 import SuccessPage from "./Success.Page";
+import { useState } from "react";
 
 export default function App() {
+  const [booking, setBooking] = useState({
+    seats: [],
+    ids: [],
+    name: "",
+    cpf: "",
+  });
+  const [showtime, setShowtime] = useState(undefined);
+
   return (
     <>
       <GlobalStyle />
@@ -15,8 +24,28 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/filme/:idMovie" element={<MoviePage />} />
-          <Route path="/sessao/:idShowtime" element={<ShowtimePage />} />
-          <Route path="/sucesso" element={<SuccessPage />} />
+          <Route
+            path="/sessao/:idShowtime"
+            element={
+              <ShowtimePage
+                booking={booking}
+                setBooking={setBooking}
+                showtime={showtime}
+                setShowtime={setShowtime}
+              />
+            }
+          />
+          <Route
+            path="/sucesso"
+            element={
+              <SuccessPage
+                booking={booking}
+                setBooking={setBooking}
+                showtime={showtime}
+                setShowtime={setShowtime}
+              />
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
