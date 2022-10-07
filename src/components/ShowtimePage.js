@@ -11,6 +11,8 @@ export default function ShowtimePage() {
   const URL = `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idShowtime}/seats`;
 
   const [showtime, setShowtime] = useState(undefined);
+  const [seatsSelected, setSeatsSelected] = useState([]);
+  const [form, setForm] = useState({ name: "", cpf: "" });
 
   useEffect(() => {
     const request = axios.get(URL);
@@ -23,6 +25,48 @@ export default function ShowtimePage() {
       console.log(error.response.data);
     });
   }, []);
+
+  const handleForm = function (event) {
+    event.preventDefault();
+    const { name, value } = event.target;
+    if (value) setForm({ ...form, [name]: value });
+  };
+
+  // console.log(form);
+  // console.log(showtime);
+  console.log(seatsSelected);
+
+  const selectSeat = function (seat) {
+    if (seat.isAvailable) {
+      if (!seatsSelected.includes(seat.id)) {
+        setSeatsSelected([...seatsSelected, seat.id]);
+      } else {
+        setSeatsSelected(
+          seatsSelected.filter((item) => {
+            return item !== seat.id;
+          })
+        );
+      }
+    } else {
+      alert("Esse assento não está disponível");
+    }
+  };
+
+  const setBackColor = function (seat) {
+    if (seatsSelected.includes(seat.id)) {
+      return "#1AAE9E";
+    } else {
+      return seat.isAvailable ? "#C3CFD9" : "#FBE192";
+    }
+  };
+
+  const setBorderColor = function (seat) {
+    if (seatsSelected.includes(seat.id)) {
+      return "#0E7D71";
+    } else {
+      return seat.isAvailable ? "#7B8B99" : "#F7C52B";
+    }
+  };
 
   const seatsLabel = [
     {
@@ -46,16 +90,19 @@ export default function ShowtimePage() {
     return <div>Carregando</div>;
   }
 
-  // const showtimeText = function (showtime) {
-  //   return;
-  // };
-
   return (
     <ContainerShowtime>
       <h2>Selecione o(s) assento(s)</h2>
       <SeatsBox>
         {showtime.seats.map((seat) => (
-          <Seat key={seat.id}>{seat.name}</Seat>
+          <Seat
+            key={seat.id}
+            onClick={() => selectSeat(seat)}
+            backColor={setBackColor(seat)}
+            borderColor={setBorderColor(seat)}
+          >
+            {seat.name}
+          </Seat>
         ))}
       </SeatsBox>
       <SeatsLabelBox>
@@ -74,11 +121,27 @@ export default function ShowtimePage() {
         ))}
       </SeatsLabelBox>
 
-      <Form>
-        <span>Nome do comprador:</span>
-        <input type={"text"} placeholder="Digite seu nome..."></input>
-        <span>CPF do comprador:</span>
-        <input type={"text"} placeholder="Digite seu CPF..."></input>
+      <Form onSubmit={handleForm}>
+        <label htmlFor="name">Nome do comprador:</label>
+        <input
+          type={"text"}
+          id="name"
+          name="name"
+          value={form.name}
+          onChange={handleForm}
+          placeholder="Digite seu nome..."
+          required
+        ></input>
+        <label htmlFor="cpf">CPF do comprador:</label>
+        <input
+          type={"number"}
+          id="cpf"
+          name="cpf"
+          value={form.cpf}
+          onChange={handleForm}
+          placeholder="Digite seu CPF..."
+          required
+        ></input>
         <input
           className="btn"
           type={"submit"}
@@ -147,7 +210,7 @@ const SeatsLabelBox = styled.div`
 const Form = styled.form`
   width: 100%;
   margin-top: 20px;
-  span {
+  label {
     display: inline-block;
     font-size: 18px;
     line-height: 21px;

@@ -38,9 +38,9 @@ export default function MoviePage() {
           <div className="showtime-box">
             {day.showtimes.map((showtime) => (
               <Link key={showtime.id} to={`/sessao/${showtime.id}`}>
-                <div className="showtime">
+                <button className="showtime btn">
                   <span>{showtime.name}</span>
-                </div>
+                </button>
               </Link>
             ))}
           </div>
@@ -84,6 +84,7 @@ const BoxShowtime = styled.div`
     font-size: 18px;
     line-height: 43px;
     text-align: center;
+    border: none;
     border-radius: 3px;
   }
 `;
