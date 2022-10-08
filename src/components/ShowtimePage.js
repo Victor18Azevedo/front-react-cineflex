@@ -46,16 +46,28 @@ export default function ShowtimePage({
     });
   };
 
+  console.log(booking);
+
   const selectSeat = function (seat) {
     if (seat.isAvailable) {
       if (!booking.ids.includes(seat.id)) {
-        const newBooking = { ...booking, ids: [...booking.ids, seat.id] };
-        setBooking({ ...newBooking, seats: [...booking.seats, seat.name] });
+        setBooking({
+          ...booking,
+          ids: [...booking.ids, seat.id],
+          seats: [...booking.seats, seat.name],
+        });
       } else {
-        const seats = booking.ids.filter((id) => {
+        const ids = booking.ids.filter((id) => {
           return id !== seat.id;
         });
-        setBooking({ ...booking, ids: [...seats] });
+        const seats = booking.seats.filter((name) => {
+          return name !== seat.name;
+        });
+        setBooking({
+          ...booking,
+          ids,
+          seats,
+        });
       }
     } else {
       alert("Esse assento não está disponível");

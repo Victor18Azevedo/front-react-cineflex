@@ -5,7 +5,6 @@ import { ReactComponent as BackIcon } from "../assets/arrow-undo-circle-sharp.sv
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
   return (
     <ContainerHeader>
       <div>
