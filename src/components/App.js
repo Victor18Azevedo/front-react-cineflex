@@ -19,8 +19,8 @@ export default function App() {
   return (
     <>
       <GlobalStyle />
-      <Header />
       <BrowserRouter>
+        <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/filme/:idMovie" element={<MoviePage />} />
