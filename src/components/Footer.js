@@ -4,9 +4,16 @@ export default function Footer({ movieName, moviePoster, showtime }) {
   return (
     <ContainerFooter>
       <div className="movie-poster">
-        <img src={moviePoster} alt={`Poster do filme ${movieName}`} />
+        <img
+          src={moviePoster}
+          alt={`Poster do filme ${movieName}`}
+          data-identifier="movie-img-preview"
+        />
       </div>
-      <div className="movie-text">
+      <div
+        className="session-infos"
+        data-identifier="movie-and-session-infos-preview"
+      >
         <p>{movieName}</p>
         {showtime ? <p>{showtime}</p> : null}
       </div>
@@ -42,7 +49,7 @@ const ContainerFooter = styled.footer`
       object-fit: cover;
     }
   }
-  .movie-text {
+  .session-infos {
     font-size: 26px;
     line-height: 30px;
     display: flex;

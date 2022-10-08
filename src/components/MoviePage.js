@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import Footer from "./Footer";
@@ -10,6 +10,8 @@ export default function MoviePage() {
   const URL = `https://mock-api.driven.com.br/api/v5/cineflex/movies/${idMovie}/showtimes`;
 
   const [movie, setMovie] = useState(undefined);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const request = axios.get(URL);
@@ -32,16 +34,19 @@ export default function MoviePage() {
       <h2>Selecione o Horário</h2>
       {movie.days.map((day) => (
         <BoxShowtime key={day.id}>
-          <p>
+          <p data-identifier="session-date">
             {day.weekday} - {day.date}
           </p>
           <div className="showtime-box">
             {day.showtimes.map((showtime) => (
-              <Link key={showtime.id} to={`/sessao/${showtime.id}`}>
-                <button className="showtime btn">
-                  <span>{showtime.name}</span>
-                </button>
-              </Link>
+              <button
+                key={showtime.id}
+                onClick={() => navigate(`/sessao/${showtime.id}`)}
+                className="showtime btn"
+                data-identifier="hour-minute-btn"
+              >
+                <span>{showtime.name}</span>
+              </button>
             ))}
           </div>
         </BoxShowtime>

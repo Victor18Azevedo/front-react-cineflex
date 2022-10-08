@@ -25,23 +25,33 @@ export default function SuccessPage({
       </TitleSuccess>
       <InfoBox>
         <h3>Filme e sessão</h3>
-        <p>{showtime.movie.title}</p>
-        <p>
+        <p data-identifier="movie-session-infos-reserve-finished">
+          {showtime.movie.title}
+        </p>
+        <p data-identifier="movie-session-infos-reserve-finished">
           {showtime.day.date} {showtime.name}
         </p>
       </InfoBox>
       <InfoBox>
         <h3>Ingressos</h3>
-        {booking.seats.map((seat) => (
-          <p key={seat}>Assento {seat}</p>
-        ))}
+        <div data-identifier="seat-infos-reserve-finished">
+          {booking.seats.map((seat) => (
+            <p key={seat}>Assento {seat}</p>
+          ))}
+        </div>
       </InfoBox>
       <InfoBox>
         <h3>Comprador</h3>
-        <p>Nome: {booking.name}</p>
-        <p>CPF: {booking.cpf}</p>
+        <p data-identifier="buyer-infos-reserve-finished">
+          Nome: {booking.name}
+        </p>
+        <p data-identifier="buyer-infos-reserve-finished">CPF: {booking.cpf}</p>
       </InfoBox>
-      <button onClick={backToHomPage} className="btn">
+      <button
+        onClick={backToHomPage}
+        className="btn"
+        data-identifier="back-to-home-btn"
+      >
         Voltar para Home
       </button>
     </ContainerSuccess>

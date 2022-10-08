@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 import styled from "styled-components";
@@ -33,18 +33,12 @@ export default function ShowtimePage({
     if (value) setBooking({ ...booking, [name]: value });
   };
 
-  // console.log(booking);
-  // console.log(showtime);
-  // console.log(booking.ids);
-
   const sendBooking = function (event) {
     event.preventDefault();
 
     const body = { ids: booking.ids, name: booking.name, cpf: booking.cpf };
     const requestBooking = axios.post(URL_BOOK, body);
     requestBooking.then((response) => {
-      console.log(body);
-      console.log(response.data);
       navigate("/sucesso");
     });
     requestBooking.catch((error) => {
@@ -89,16 +83,19 @@ export default function ShowtimePage({
       text: "Selecionado",
       color: "#1AAE9E",
       borderColor: "#0E7D71",
+      dataIdentifier: "seat-selected-subtitle",
     },
     {
       text: "Disponível",
       color: "#C3CFD9",
       borderColor: "#7B8B99",
+      dataIdentifier: "seat-available-subtitle",
     },
     {
       text: "Indisponível",
       color: "#FBE192",
       borderColor: "#F7C52B",
+      dataIdentifier: "seat-unavailable-subtitle",
     },
   ];
 
@@ -116,6 +113,7 @@ export default function ShowtimePage({
             onClick={() => selectSeat(seat)}
             backColor={setBackColor(seat)}
             borderColor={setBorderColor(seat)}
+            data-identifier="seat"
           >
             {seat.name}
           </Seat>
@@ -131,6 +129,7 @@ export default function ShowtimePage({
               borderColor={() => {
                 return seatLabel.borderColor;
               }}
+              data-identifier={seatLabel.dataIdentifier}
             />
             <span>{seatLabel.text}</span>
           </div>
@@ -146,6 +145,7 @@ export default function ShowtimePage({
           value={booking.name}
           onChange={handleForm}
           placeholder="Digite seu nome..."
+          data-identifier="buyer-name-input"
           required
         ></input>
         <label htmlFor="cpf">CPF do comprador:</label>
@@ -156,12 +156,14 @@ export default function ShowtimePage({
           value={booking.cpf}
           onChange={handleForm}
           placeholder="Digite seu CPF..."
+          data-identifier="buyer-cpf-input"
           required
         ></input>
         <input
           className="btn"
           type={"submit"}
-          placeholder="Reservar assento(s)"
+          value="Reservar assento(s)"
+          data-identifier="reservation-btn"
         ></input>
       </Form>
 

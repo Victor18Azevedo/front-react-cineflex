@@ -13,7 +13,6 @@ export default function HomePage() {
 
     request.then((response) => {
       setMoviesList(response.data);
-      // console.log(response.data);
     });
 
     request.catch((error) => {
@@ -30,14 +29,14 @@ export default function HomePage() {
       <h2>Selecione o filme</h2>
       <ContainerMovies>
         {moviesList.map((movie) => (
-          <div key={movie.id}>
-            <Link to={`/filme/${movie.id}`}>
+          <Link key={movie.id} to={`/filme/${movie.id}`}>
+            <div data-identifier="movie-outdoor">
               <img
                 src={movie.posterURL}
                 alt={`Poster do filme ${movie.title}`}
               />
-            </Link>
-          </div>
+            </div>
+          </Link>
         ))}
       </ContainerMovies>
     </ContainerHome>
