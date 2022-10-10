@@ -29,12 +29,15 @@ export default function ShowtimePage({
 
   const sendBooking = function (event) {
     event.preventDefault();
-    console.log("TESTE");
     const ids = booking.map((buyer) => {
       return buyer.id;
     });
     const compradores = booking.map((buyer) => {
-      return { idAssento: buyer.id, nome: buyer.name, cpf: buyer.cpf };
+      return {
+        idAssento: buyer.id,
+        nome: buyer.name,
+        cpf: buyer.cpf.replace(/[^\d]/g, ""),
+      };
     });
     const body = { ids, compradores };
     const requestBooking = axios.post(URL_BOOK, body);

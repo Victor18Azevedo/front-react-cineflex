@@ -7,6 +7,7 @@ export default function BuyerData({ buyerNumber, booking, setBooking }) {
 
   const handleName = function (event) {
     const { name, value } = event.target;
+
     setUserName({ [name]: value });
 
     const newBuyers = [...booking];
@@ -14,18 +15,41 @@ export default function BuyerData({ buyerNumber, booking, setBooking }) {
     setBooking([...newBuyers]);
   };
 
+  const isToDelete = function (typeInput) {
+    return (typeInput === "deleteContentForward") |
+      (typeInput === "deleteContentBackward")
+      ? true
+      : false;
+  };
+
   const handleCpf = function (event) {
+    const typeInput = event.nativeEvent.inputType;
     const { name, value } = event.target;
-    const cpf = stringToCpf(value);
-    setUserCpf({ [name]: cpf });
+    const newCpf = isToDelete(typeInput) ? value : formatCpfInput(value);
+
+    setUserCpf({ [name]: newCpf });
 
     const newBuyers = [...booking];
-    newBuyers[buyerNumber].cpf = cpf;
+    newBuyers[buyerNumber].cpf = newCpf;
     setBooking([...newBuyers]);
   };
 
-  const stringToCpf = function (cpf) {
-    return cpf.replace(/[^\d\.-]/g, "");
+  // ACEITA FORMATOS: 12345678911 e 123.123.123-53
+  const formatCpfInput = function (cpf) {
+    cpf = cpf.replace(/[^\d]/g, "");
+    const cpfArray = cpf.split("");
+    if (cpfArray.length > 11) {
+      window.alert("CPF INVÁLIDO:\nMais de 11 algarismos númericos");
+      return "";
+    }
+    if (cpfArray.length < 7) {
+      cpf = cpf.replace(/(\d{3})/, "$1.");
+    } else if (cpfArray.length < 10) {
+      cpf = cpf.replace(/(\d{3})(\d{3})/, "$1.$2.");
+    } else if (cpfArray.length <= 14) {
+      cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3-");
+    }
+    return cpf;
   };
 
   return (
@@ -56,7 +80,9 @@ export default function BuyerData({ buyerNumber, booking, setBooking }) {
         onChange={handleCpf}
         placeholder="Digite seu CPF..."
         data-identifier="buyer-cpf-input"
-        minLength={"11"}
+        pattern={`([0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2})`}
+        // pattern={`([0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2})|[0-9]{11}`}
+        minLength={"14"}
         maxLength={"14"}
         required={"required"}
       ></input>
