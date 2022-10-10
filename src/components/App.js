@@ -8,12 +8,7 @@ import SuccessPage from "./Success.Page";
 import { useState } from "react";
 
 export default function App() {
-  const [booking, setBooking] = useState({
-    seats: [],
-    ids: [],
-    name: "",
-    cpf: "",
-  });
+  const [booking, setBooking] = useState([]);
   const [showtime, setShowtime] = useState(undefined);
 
   return (

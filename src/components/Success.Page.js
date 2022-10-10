@@ -10,10 +10,16 @@ export default function SuccessPage({
   const navigate = useNavigate();
 
   const backToHomPage = function () {
-    setBooking({ seats: [], ids: [], name: "", cpf: "" });
+    setBooking([]);
     setShowtime(undefined);
     navigate("/");
   };
+
+  const cpfToString = function (cpf) {
+    cpf = cpf.replace(/[^\d]/g, "");
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  };
+
   return (
     <ContainerSuccess>
       <TitleSuccess>
@@ -34,18 +40,22 @@ export default function SuccessPage({
       </InfoBox>
       <InfoBox>
         <h3>Ingressos</h3>
-        <div data-identifier="seat-infos-reserve-finished">
-          {booking.seats.map((seat) => (
-            <p key={seat}>Assento {seat}</p>
-          ))}
-        </div>
-      </InfoBox>
-      <InfoBox>
-        <h3>Comprador</h3>
-        <p data-identifier="buyer-infos-reserve-finished">
-          Nome: {booking.name}
-        </p>
-        <p data-identifier="buyer-infos-reserve-finished">CPF: {booking.cpf}</p>
+        <hr />
+
+        {booking.map((buyer) => (
+          <Ticket key={buyer.seat}>
+            <p data-identifier="seat-infos-reserve-finished">
+              Assento: {buyer.seat}
+            </p>
+            <p data-identifier="buyer-infos-reserve-finished">
+              Nome: {buyer.name}
+            </p>
+            <p data-identifier="buyer-infos-reserve-finished">
+              CPF: {cpfToString(buyer.cpf)}
+            </p>
+            <hr />
+          </Ticket>
+        ))}
       </InfoBox>
       <button
         onClick={backToHomPage}
@@ -76,6 +86,9 @@ const ContainerSuccess = styled.section`
     border: none;
     border-radius: 3px;
     margin-top: 80px;
+  }
+  hr {
+    margin: 15px 0;
   }
 `;
 const TitleSuccess = styled.div`
@@ -109,3 +122,5 @@ const InfoBox = styled.div`
     text-transform: capitalize;
   }
 `;
+
+const Ticket = styled.div``;

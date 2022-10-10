@@ -4,6 +4,7 @@ import axios from "axios";
 
 import styled from "styled-components";
 import Footer from "./Footer";
+import BuyerData from "./BuyerData";
 
 export default function ShowtimePage({
   booking,
@@ -11,7 +12,6 @@ export default function ShowtimePage({
   showtime,
   setShowtime,
 }) {
-  // const seats = Array.from({ length: 50 }, (_, i) => i + 1);
   const { idShowtime } = useParams();
   const navigate = useNavigate();
   const URL = `https://mock-api.driven.com.br/api/v5/cineflex/showtimes/${idShowtime}/seats`;
@@ -27,16 +27,16 @@ export default function ShowtimePage({
     });
   }, []);
 
-  const handleForm = function (event) {
-    const { name, value } = event.target;
-
-    if (value) setBooking({ ...booking, [name]: value });
-  };
-
   const sendBooking = function (event) {
     event.preventDefault();
-
-    const body = { ids: booking.ids, name: booking.name, cpf: booking.cpf };
+    console.log("TESTE");
+    const ids = booking.map((buyer) => {
+      return buyer.id;
+    });
+    const compradores = booking.map((buyer) => {
+      return { idAssento: buyer.id, nome: buyer.name, cpf: buyer.cpf };
+    });
+    const body = { ids, compradores };
     const requestBooking = axios.post(URL_BOOK, body);
     requestBooking.then((response) => {
       navigate("/sucesso");
@@ -46,36 +46,58 @@ export default function ShowtimePage({
     });
   };
 
-  console.log(booking);
-
   const selectSeat = function (seat) {
     if (seat.isAvailable) {
-      if (!booking.ids.includes(seat.id)) {
-        setBooking({
+      if (isNewSeat(seat)) {
+        const newBuyers = [
           ...booking,
-          ids: [...booking.ids, seat.id],
-          seats: [...booking.seats, seat.name],
+          {
+            id: seat.id,
+            seat: seat.name,
+            name: "",
+            cpf: "",
+          },
+        ];
+        newBuyers.sort((a, b) => {
+          return a.id - b.id;
         });
-      } else {
-        const ids = booking.ids.filter((id) => {
-          return id !== seat.id;
+        setBooking([...newBuyers]);
+      } else if (confirmRemove(seat)) {
+        const newBuyers = booking.filter((buyer) => {
+          return buyer.id !== seat.id;
         });
-        const seats = booking.seats.filter((name) => {
-          return name !== seat.name;
+        newBuyers.sort((a, b) => {
+          return a.id - b.id;
         });
-        setBooking({
-          ...booking,
-          ids,
-          seats,
-        });
+        setBooking([...newBuyers]);
       }
     } else {
       alert("Esse assento não está disponível");
     }
   };
 
+  const confirmRemove = function (seat) {
+    return window.confirm(
+      `Deseja relamente remover o assento ${seat.name} e apagar seus respectivos dados?`
+    );
+  };
+
+  const isNewSeat = function (seat) {
+    const seats = booking.map((buyer) => {
+      return buyer.seat;
+    });
+    return !seats.includes(seat.name);
+  };
+
+  const isSeatSelected = function (seatId) {
+    const seatSelected = booking.filter((buyer) => {
+      return buyer.id === seatId;
+    });
+    return seatSelected.length > 0 ? true : false;
+  };
+
   const setBackColor = function (seat) {
-    if (booking.ids.includes(seat.id)) {
+    if ((booking.length > 0) & isSeatSelected(seat.id)) {
       return "#1AAE9E";
     } else {
       return seat.isAvailable ? "#C3CFD9" : "#FBE192";
@@ -83,7 +105,7 @@ export default function ShowtimePage({
   };
 
   const setBorderColor = function (seat) {
-    if (booking.ids.includes(seat.id)) {
+    if ((booking.length > 0) & isSeatSelected(seat.id)) {
       return "#0E7D71";
     } else {
       return seat.isAvailable ? "#7B8B99" : "#F7C52B";
@@ -149,33 +171,20 @@ export default function ShowtimePage({
       </SeatsLabelBox>
 
       <Form onSubmit={sendBooking}>
-        <label htmlFor="name">Nome do comprador:</label>
-        <input
-          type={"text"}
-          id="name"
-          name="name"
-          value={booking.name}
-          onChange={handleForm}
-          placeholder="Digite seu nome..."
-          data-identifier="buyer-name-input"
-          required
-        ></input>
-        <label htmlFor="cpf">CPF do comprador:</label>
-        <input
-          type={"number"}
-          id="cpf"
-          name="cpf"
-          value={booking.cpf}
-          onChange={handleForm}
-          placeholder="Digite seu CPF..."
-          data-identifier="buyer-cpf-input"
-          required
-        ></input>
+        {booking.map((buyer, index) => (
+          <BuyerData
+            key={buyer.id}
+            buyerNumber={index}
+            booking={booking}
+            setBooking={setBooking}
+          />
+        ))}
         <input
           className="btn"
           type={"submit"}
           value="Reservar assento(s)"
           data-identifier="reservation-btn"
+          disabled={booking.length === 0 || false}
         ></input>
       </Form>
 
@@ -190,7 +199,7 @@ export default function ShowtimePage({
 
 const ContainerShowtime = styled.section`
   width: 100vw;
-  padding: 0 24px;
+  padding: 0 24px 300px;
   margin-top: 67px;
   h2 {
     font-size: 24px;
@@ -229,7 +238,7 @@ const SeatsLabelBox = styled.div`
   color: #4e5a65;
   font-size: 13px;
   line-height: 15px;
-  margin-top: 12px;
+  margin: 12px 0 20px;
   div {
     display: flex;
     flex-direction: column;
@@ -239,26 +248,9 @@ const SeatsLabelBox = styled.div`
 
 const Form = styled.form`
   width: 100%;
-  margin-top: 20px;
-  label {
-    display: inline-block;
-    font-size: 18px;
-    line-height: 21px;
-    margin: 10px 0 5px;
-  }
-  input {
-    display: block;
-    width: 100%;
-    max-width: 420px;
-    height: 51px;
-    border: 1px solid #d5d5d5;
-    border-radius: 3px;
-    color: #afafaf;
-    font-size: 18px;
-    font-style: italic;
-    padding: 0 10px;
-  }
+  margin-top: 40px;
   .btn {
+    display: block;
     width: 225px;
     height: 42px;
     margin: 0 auto;
@@ -269,5 +261,8 @@ const Form = styled.form`
     border: none;
     border-radius: 3px;
     margin-top: 20px;
+    &:disabled {
+      opacity: 0.5;
+    }
   }
 `;
